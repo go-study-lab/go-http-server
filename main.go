@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"example.com/http_demo/router"
 	"log"
 	"net/http"
 	"os"
@@ -17,7 +18,7 @@ func main() {
 	//mux.Handle("/", &helloHandler{})
 	muxRouter := mux.NewRouter()
 
-	RegisterRoutes(muxRouter)
+	router.RegisterRoutes(muxRouter)
 
 	server := &http.Server{
 		Addr:    ":8080",
