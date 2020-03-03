@@ -1,0 +1,21 @@
+{{define "content"}}
+{{range .Students}}
+<div class="row">
+    <div class="col-md-4">
+        <h2>Name</h2>
+        <p>Name has the value of : {{.Name}} </p>
+        <p><a class="btn btn-default" href="#" role="button">More &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Id</h2>
+        <p>Id has the value of : {{.Id}} </p>
+        <p><a class="btn btn-default" href="#" role="button">More &raquo;</a></p>
+    </div>
+    <div class="col-md-4">
+        <h2>Country</h2>
+        <p>Country has the value of : {{.Country}} </p>
+        <p><a class="btn btn-default" href="#" role="button">More &raquo;</a></p>
+    </div>
+</div>
+{{end}}
+{{end}}

@@ -1,0 +1,20 @@
+{{define "nav"}}
+<nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">Person general infor</a>
+        </div>
+    </div>
+</nav>
+
+<div class="jumbotron">
+    <div class="container">
+        <h1>Hello, Professor {{.Teacher.Name}}</h1>
+        <ul>
+            <li>Name   : {{.Teacher.Name}}<p>
+            <li>Subject : {{.Teacher.Subject}}
+        </ul>
+        <p><a class="btn btn-primary btn-lg" href="#" role="button">More &raquo;</a></p>
+    </div>
+</div>
+{{end}}
