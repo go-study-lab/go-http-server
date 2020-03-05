@@ -3,12 +3,20 @@ package router
 import (
 	"example.com/http_demo/middleware"
 	"github.com/gorilla/mux"
+	"net/http"
 
 	"example.com/http_demo/handler"
 )
 
 func RegisterRoutes(r *mux.Router) {
+	// serve static file request
+	fs := http.FileServer(http.Dir("assets/"))
+	serveFileHandler := http.StripPrefix("/static/", fs)
+	r.PathPrefix("/static/").Handler(serveFileHandler)
+
+	// apply Logging middleware
 	r.Use(middleware.Logging())
+
 	indexRouter := r.PathPrefix("/index").Subrouter()
 	indexRouter.Handle("/", &handler.HelloHandler{})
 	indexRouter.HandleFunc("/display_headers", handler.DisplayHeadersHandler)
