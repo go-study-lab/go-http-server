@@ -82,3 +82,34 @@ func TestUpdateUserNameById(t *testing.T) {
 		})
 	}
 }
+
+func TestGetUserByNameAndPassword(t *testing.T) {
+	type args struct {
+		name     string
+		password string
+	}
+	tests := []struct {
+		name     string
+		args     args
+		wantErr  bool
+	}{
+		{
+			name: "test",
+			args: args{
+				name:     "Klein",
+				password: "123",
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotUser, err := GetUserByNameAndPassword(tt.args.name, tt.args.password)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("GetUserByNameAndPassword() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			log.Info("user %v", gotUser)
+		})
+	}
+}

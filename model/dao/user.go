@@ -20,6 +20,14 @@ func GetAllUsers() (users []*table.User, err error) {
 	return
 }
 
+func GetUserByNameAndPassword (name, password string) (user *table.User, err error) {
+	user = new(table.User)
+	err = DB().Where("username = ? AND secret = ?", name, password).
+		  First(&user).Error
+
+	return
+}
+
 func UpdateUserNameById(userName string, userId int64) (err error) {
 	user := new(table.User)
 	err = DB().Where("id = ?", userId).First(user).Error

@@ -10,3 +10,8 @@ func GetAllUsers() (users []*table.User, err error) {
 
 	return
 }
+
+func AuthenticateUser(name, password string) (user *table.User, err error) {
+	user, err = dao.GetUserByNameAndPassword(name, password)
+	return
+}

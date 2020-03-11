@@ -1,6 +1,7 @@
 package router
 
 import (
+	"example.com/http_demo/handler/user"
 	"example.com/http_demo/middleware"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -27,7 +28,10 @@ func RegisterRoutes(r *mux.Router) {
 
 	userRouter := r.PathPrefix("/user").Subrouter()
 	userRouter.HandleFunc("/names/{name}/countries/{country}", handler.ShowVisitorInfo)
-	userRouter.Use(middleware.Method("GET"))
+	//userRouter.Use(middleware.Method("GET"))
+	userRouter.HandleFunc("/login", user.Login).Methods("POST")
+	userRouter.HandleFunc("/secret", user.Secret)
+	userRouter.HandleFunc("/logout", user.Logout)
 
     viewRouter := r.PathPrefix("/view").Subrouter()
     viewRouter.HandleFunc("/index", handler.ShowIndexView)
