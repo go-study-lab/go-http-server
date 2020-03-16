@@ -2,6 +2,7 @@ package router
 
 import (
 	"example.com/http_demo/handler/user"
+	"example.com/http_demo/handler/ws"
 	"example.com/http_demo/middleware"
 	"github.com/gorilla/mux"
 	"net/http"
@@ -35,4 +36,8 @@ func RegisterRoutes(r *mux.Router) {
 
     viewRouter := r.PathPrefix("/view").Subrouter()
     viewRouter.HandleFunc("/index", handler.ShowIndexView)
+
+    wsRouter := r.PathPrefix("/ws").Subrouter()
+    wsRouter.HandleFunc("/echo", ws.EchoMessage)
+    wsRouter.HandleFunc("/echo_display", ws.DisplayEcho)
 }
