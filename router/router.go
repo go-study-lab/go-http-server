@@ -17,7 +17,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.PathPrefix("/static/").Handler(serveFileHandler)
 
 	// apply Logging middleware
-	r.Use(middleware.Logging())
+	r.Use(middleware.Logging(), middleware.AccessLogging)
 
 	indexRouter := r.PathPrefix("/index").Subrouter()
 	indexRouter.Handle("/", &handler.HelloHandler{})

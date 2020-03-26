@@ -19,6 +19,7 @@ func init() {
 func initDB() *gorm.DB {
 	// In our docker dev environment use
 	db, err := gorm.Open("mysql", "go_web:go_web@tcp(database:3306)/go_web?charset=utf8&parseTime=True&loc=Local")
+	// Out of docker use
 	//db, err := gorm.Open("mysql", "go_web:go_web@tcp(localhost:33063)/go_web?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		panic(err)

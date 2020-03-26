@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"example.com/http_demo/router"
+	"example.com/http_demo/utils/vlog"
 	"log"
 	"net/http"
 	"os"
@@ -18,11 +19,17 @@ func main() {
 	//mux.Handle("/", &helloHandler{})
 	muxRouter := mux.NewRouter()
 
+	// register route handlers
 	router.RegisterRoutes(muxRouter)
+
+	// set error log writer
+	errorWriter := vlog.ErrorLog.Writer()
+	defer errorWriter.Close()
 
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: muxRouter,
+		ErrorLog: log.New(vlog.ErrorLog.Writer(), "", 0),
 	}
 
 	// 创建系统信号接收器
