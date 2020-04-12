@@ -21,6 +21,7 @@ func RegisterRoutes(r *mux.Router) {
 
 	indexRouter := r.PathPrefix("/index").Subrouter()
 	indexRouter.Handle("/", &handler.HelloHandler{})
+	indexRouter.HandleFunc("/password_hashing", handler.PassWordHashingHandler)
 	indexRouter.HandleFunc("/display_headers", handler.DisplayHeadersHandler)
 	indexRouter.HandleFunc("/display_url_params", handler.DisplayUrlParamsHandler)
 	indexRouter.HandleFunc("/display_form_data", handler.DisplayFormDataHandler).Methods("POST")
@@ -34,6 +35,7 @@ func RegisterRoutes(r *mux.Router) {
 	userRouter.HandleFunc("/login", user.Login).Methods("POST")
 	userRouter.HandleFunc("/secret", user.Secret)
 	userRouter.HandleFunc("/logout", user.Logout)
+
 
     viewRouter := r.PathPrefix("/view").Subrouter()
     viewRouter.HandleFunc("/index", handler.ShowIndexView)
