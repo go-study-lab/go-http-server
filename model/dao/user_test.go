@@ -16,8 +16,8 @@ func TestCreateUser(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name: "test",
-			args: args{user: &table.User{UserName: "Kevin", Secret: "123456"}},
+			name:    "test",
+			args:    args{user: &table.User{UserName: "Kevin", Secret: "123456"}},
 			wantErr: false,
 		},
 	}
@@ -32,11 +32,11 @@ func TestCreateUser(t *testing.T) {
 
 func TestGetAllUsers(t *testing.T) {
 	tests := []struct {
-		name      string
-		wantErr   bool
+		name    string
+		wantErr bool
 	}{
 		{
-			name: "test",
+			name:    "test",
 			wantErr: false,
 		},
 	}
@@ -89,9 +89,9 @@ func TestGetUserByNameAndPassword(t *testing.T) {
 		password string
 	}
 	tests := []struct {
-		name     string
-		args     args
-		wantErr  bool
+		name    string
+		args    args
+		wantErr bool
 	}{
 		{
 			name: "test",

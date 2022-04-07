@@ -1,8 +1,11 @@
 package dao
 
-import "example.com/http_demo/model/dao/table"
+import (
+	"example.com/http_demo/model/dao/table"
+)
 
 func CreateUser(user *table.User) (err error) {
+	// 打印出要执行的SQL语句 err = DB().Debug().Create(user).Error
 	err = DB().Create(user).Error
 
 	return
@@ -20,24 +23,20 @@ func GetAllUsers() (users []*table.User, err error) {
 	return
 }
 
-func GetUserByNameAndPassword (name, password string) (user *table.User, err error) {
+func GetUserByNameAndPassword(name, password string) (user *table.User, err error) {
 	user = new(table.User)
 	err = DB().Where("username = ? AND secret = ?", name, password).
-		  First(&user).Error
+		First(&user).Error
 
 	return
 }
 
 func UpdateUserNameById(userName string, userId int64) (err error) {
 	user := new(table.User)
-	err = DB().Where("id = ?", userId).First(user).Error
-	if err != nil {
-		return
+	updated := map[string]interface{}{
+		"username": userName,
 	}
-
-	user.UserName = userName
-	err = DB().Save(user).Error
-
+	err = DB().Model(user).Where("id = ?", userId).Updates(updated).Error
 	return
 }
 
