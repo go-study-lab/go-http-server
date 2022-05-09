@@ -3,9 +3,11 @@ package dao
 import (
 	"database/sql"
 	"example.com/http_demo/model/dao/table"
+	"example.com/http_demo/utils/zlog"
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jinzhu/gorm"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
 	"os"
 	"testing"
 	"time"
@@ -79,6 +81,7 @@ func TestGetUserByNameAndPasswordMock(t *testing.T) {
 			sqlmock.NewRows([]string{"id", "username", "secret", "created_at", "updated_at"}).
 				AddRow(1, user.UserName, user.Secret, user.CreatedAt, user.UpdatedAt))
 	res, err := GetUserByNameAndPassword(user.UserName, user.Secret)
+	zlog.Info("MockTestResult", zap.Any("res", res), zap.Any("err", err))
 	assert.Nil(t, err)
 	assert.Equal(t, user, res)
 }
