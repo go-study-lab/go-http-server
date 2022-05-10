@@ -30,7 +30,7 @@ func init() {
 		zapcore.NewCore(encoder, zapcore.AddSync(os.Stdout), zapcore.DebugLevel),
 		zapcore.NewCore(encoder, fileWriteSyncer, zapcore.DebugLevel),
 	)
-	logger = zap.New(core, zap.AddCallerSkip(1))
+	logger = zap.New(core)
 }
 
 func getFileLogWriter() (writeSyncer zapcore.WriteSyncer) {
