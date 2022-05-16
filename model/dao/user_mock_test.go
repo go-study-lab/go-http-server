@@ -2,6 +2,7 @@ package dao
 
 import (
 	"database/sql"
+	"database/sql/driver"
 	"example.com/http_demo/model/dao/table"
 	"example.com/http_demo/utils/zlog"
 	"github.com/DATA-DOG/go-sqlmock"
@@ -86,19 +87,35 @@ func TestGetUserByNameAndPasswordMock(t *testing.T) {
 	assert.Equal(t, user, res)
 }
 
-//func TestUpdateUserNameByIdMock(t *testing.T) {
-//	newName := "Kev"
-//	var userId int64 = 1
-//
-//	// GORM 在UPDATE 的时候会自动更新updated_at 字段为当前时间，与这里withArgs传递的 time.Now() 参数不一致，
-//	// 目前没有办法Mock测试GORM的UPDATE方法，除非用Exec直接执行更新SQL，不过那就失去使用ORM的意义了
-//	// 这个先跳过
-//	mock.ExpectBegin()
-//	mock.ExpectExec(regexp.QuoteMeta("UPDATE `users` SET `updated_at` = ?, `username` = ?  WHERE (id = ?)")).
-//		WithArgs(time.Now(), newName, userId).
-//		WillReturnResult(sqlmock.NewResult(1, 1))
-//	mock.ExpectCommit()
-//
-//	err := UpdateUserNameById(newName, userId)
-//	assert.Nil(t, err)
-//}
+func TestUpdateUserNameByIdMock(t *testing.T) {
+	newName := "Kev"
+	var userId int64 = 1
+
+	// GORM 在UPDATE 的时候会自动更新updated_at 字段为当前时间，与这里withArgs传递的 time.Now() 参数不一致，
+	// 目前没有办法Mock测试GORM的UPDATE方法，除非用Exec直接执行更新SQL，不过那就失去使用ORM的意义了
+	// 这个先跳过
+	// 2022.5.16 目前已找到解决方案：
+	// https://github.com/DATA-DOG/go-sqlmock/issues/
+	// sqlmock.AnyArg() match any kind of arguments seful for time.Time or similar kinds of arguments.
+	// 如果考虑代码可读性，还有一种方案，可以自定定义一个 sqlmock.Argument 实现，请看下面的 AnyTime 类型
+	mock.ExpectBegin()
+	mock.ExpectExec("UPDATE `users` SET `updated_at` = ?, `username` = ?  WHERE (id = ?)").
+		//WithArgs(sqlmock.AnyArg(), newName, userId).
+		WithArgs(AnyTime{}, newName, userId).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+	mock.ExpectCommit()
+
+	err := UpdateUserNameById(newName, userId)
+	assert.Nil(t, err)
+}
+
+// 定义一个AnyTime 类型，实现 sqlmock.Argument接口
+// 参考自：https://qiita.com/isao_e_dev/items/c9da34c6d1f99a112207
+type AnyTime struct{}
+
+func (a AnyTime) Match(v driver.Value) bool {
+	// Match 方法中：判断字段值只要是time.Time 类型，就能验证通过
+	// 这种方式比使用 sqlmock.AnyArg() 限制性更强一些，代码可读性也会更好
+	_, ok := v.(time.Time)
+	return ok
+}
