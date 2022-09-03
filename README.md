@@ -39,7 +39,7 @@ git checkout v0.2.0
 - [应该使用哪种哈希算法保护用户密码](https://mp.weixin.qq.com/s?__biz=MzUzNTY5MzU2MA==&mid=2247484347&idx=1&sn=37cdaff84347e59586ced60f9c17b026&chksm=fa80d22ccdf75b3a21f38483bc611a318b0d4ab04011fc2dcbaa388965da3533872a3ab45c55&token=726137373&lang=zh_CN#rd)
 
 - [使用bcrpyt哈希用户密码](https://mp.weixin.qq.com/s?__biz=MzUzNTY5MzU2MA==&mid=2247484352&idx=1&sn=30a070ec4aa61b98bcf4739348c6f111&chksm=fa80d257cdf75b41e51faa7f95712f6a2751659678ae487cd9868ad4de8f6b526011f0034529&token=923225651&lang=zh_CN#rd)
-
+- [整合 Zap 作为项目业务日志 Logger 组件](https://mp.weixin.qq.com/s?__biz=MzUzNTY5MzU2MA==&amp;mid=2247493846&amp;idx=1&amp;sn=de3eee6b0d1a02bcd966ea07b7401c99&amp;chksm=fa833941cdf4b057d45b7cbf2748abb1c1e79d0572b55705f868f35581c8d9ed3d9812f8e27e&token=471555695&lang=zh_CN#rd_)
 
 ## 公众号
 
