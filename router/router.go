@@ -20,7 +20,7 @@ func RegisterRoutes(r *mux.Router) {
 	r.Use(middleware.Logging(), middleware.AccessLogging)
 
 	indexRouter := r.PathPrefix("/index").Subrouter()
-	indexRouter.Handle("/", &handler.HelloHandler{})
+	indexRouter.HandleFunc("/viper_test", handler.RemoteViperConfig)
 	indexRouter.HandleFunc("/password_hashing", handler.PassWordHashingHandler)
 	indexRouter.HandleFunc("/display_headers", handler.DisplayHeadersHandler)
 	indexRouter.HandleFunc("/display_url_params", handler.DisplayUrlParamsHandler)
@@ -36,11 +36,10 @@ func RegisterRoutes(r *mux.Router) {
 	userRouter.HandleFunc("/secret", user.Secret)
 	userRouter.HandleFunc("/logout", user.Logout)
 
+	viewRouter := r.PathPrefix("/view").Subrouter()
+	viewRouter.HandleFunc("/index", handler.ShowIndexView)
 
-    viewRouter := r.PathPrefix("/view").Subrouter()
-    viewRouter.HandleFunc("/index", handler.ShowIndexView)
-
-    wsRouter := r.PathPrefix("/ws").Subrouter()
-    wsRouter.HandleFunc("/echo", ws.EchoMessage)
-    wsRouter.HandleFunc("/echo_display", ws.DisplayEcho)
+	wsRouter := r.PathPrefix("/ws").Subrouter()
+	wsRouter.HandleFunc("/echo", ws.EchoMessage)
+	wsRouter.HandleFunc("/echo_display", ws.DisplayEcho)
 }
