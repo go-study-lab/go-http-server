@@ -1,0 +1,6 @@
+database:
+  type: mysql
+  dsn: "root:superpass@tcp(localhost:30306)/go_web?charset=utf8&parseTime=True&loc=Local"
+  maxopen: 100
+  maxidle: 10
+  maxlifetime: 300

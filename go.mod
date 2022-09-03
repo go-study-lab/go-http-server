@@ -11,9 +11,10 @@ require (
 	github.com/gorilla/websocket v1.4.1
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kelseyhightower/confd v0.16.0
-	github.com/sirupsen/logrus v1.4.2
-	github.com/stretchr/testify v1.7.0
+	github.com/sirupsen/logrus v1.6.0
+	github.com/spf13/viper v1.12.0
+	github.com/stretchr/testify v1.7.1
 	go.uber.org/zap v1.21.0
-	golang.org/x/crypto v0.0.0-20191205180655-e7c4368fe9dd
+	golang.org/x/crypto v0.0.0-20220411220226-7b82a4e95df4
 	gopkg.in/natefinch/lumberjack.v2 v2.0.0
 )
