@@ -1,0 +1,4 @@
+package logic
+
+func InitOrderGoodsData() {
+}

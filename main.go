@@ -13,7 +13,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-
 func main() {
 	//mux := http.NewServeMux()
 	//mux.Handle("/", &helloHandler{})
@@ -27,8 +26,8 @@ func main() {
 	defer errorWriter.Close()
 
 	server := &http.Server{
-		Addr:    ":8080",
-		Handler: muxRouter,
+		Addr:     ":8080",
+		Handler:  muxRouter,
 		ErrorLog: log.New(vlog.ErrorLog.Writer(), "", 0),
 	}
 
@@ -53,4 +52,3 @@ func main() {
 		}
 	}
 }
-
