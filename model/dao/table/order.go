@@ -14,6 +14,10 @@ type Order struct {
 	PaidAt          time.Time `gorm:"column:paid_at" json:"paid_at"`
 }
 
+const (
+	ORDER_PAY_SUCCESS = 2
+)
+
 func (Order) TableName() string {
 	return "orders"
 }

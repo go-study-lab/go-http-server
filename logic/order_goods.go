@@ -1,4 +1,0 @@
-package logic
-
-func InitOrderGoodsData() {
-}

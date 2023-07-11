@@ -1,6 +1,7 @@
 package router
 
 import (
+	"example.com/http_demo/handler/order"
 	"example.com/http_demo/handler/user"
 	"example.com/http_demo/handler/ws"
 	"example.com/http_demo/middleware"
@@ -42,4 +43,8 @@ func RegisterRoutes(r *mux.Router) {
 	wsRouter := r.PathPrefix("/ws").Subrouter()
 	wsRouter.HandleFunc("/echo", ws.EchoMessage)
 	wsRouter.HandleFunc("/echo_display", ws.DisplayEcho)
+
+	orderRouter := r.PathPrefix("/order").Subrouter()
+	orderRouter.HandleFunc("/order_goods/init", order.GoodsInit).Methods("POST")
+	orderRouter.HandleFunc("/single_table/query_demo", order.SingeTableQuery)
 }
