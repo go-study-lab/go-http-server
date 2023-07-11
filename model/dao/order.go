@@ -154,7 +154,7 @@ func QueryOrderCountForUser(userId int64, startDate, endDate string) (orderCount
 }
 
 type OrderSerialInfo struct {
-	OrderNo string
+	OrderNo string // 对应Scan扫描的结果集里的order_no 字段
 	// 如果Scan扫描的结果字段与结构体字段不同, 需要使用tag进行标注
 	OutOrderNo string `gorm:"column:platform_order_no"`
 }
