@@ -15,7 +15,9 @@ type Order struct {
 }
 
 const (
-	ORDER_PAY_SUCCESS = 2
+	ORDER_STATE_UNPAID      = 1
+	ORDER_STATE_PAY_SUCCESS = 2
+	ORDER_STATE_PAY_FAILD   = 3
 )
 
 func (Order) TableName() string {

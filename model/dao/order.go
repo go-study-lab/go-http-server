@@ -5,6 +5,7 @@ import (
 	"example.com/http_demo/utils/zlog"
 	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
+	"time"
 )
 
 //-------- 单表查询开始 -----------//
@@ -50,7 +51,7 @@ func GetUserOrders(userId int64) (orders []*table.Order, err error) {
 func GetUserPaidOrders(userId int64) (orders []*table.Order, err error) {
 	orders = make([]*table.Order, 0)
 	err = DB().Where("user_id = ?", userId).
-		Where("state = ?", 2).
+		Where("state = ?", table.ORDER_STATE_PAY_SUCCESS).
 		// 这两个Where调用等价于 .Where("user_id = ? AND state = ?", userId, 2)
 		// 等价于用Map查询
 		// .Where(map[stirng]interface{} { // 不建议使用, 只能进行相等匹配, 且不能做参数类型限制
@@ -67,7 +68,7 @@ func GetUserPaidOrders(userId int64) (orders []*table.Order, err error) {
 func GetUserUnPaidOrders(userId int64) (orders []*table.Order, err error) {
 	orders = make([]*table.Order, 0)
 	err = DB().Where("user_id = ?", userId).
-		Where("state IN (?)", []int{1, 3}).
+		Where("state IN (?)", []int{table.ORDER_STATE_UNPAID, table.ORDER_STATE_PAY_FAILD}).
 		Find(&orders).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return nil, err
@@ -78,7 +79,7 @@ func GetUserUnPaidOrders(userId int64) (orders []*table.Order, err error) {
 func GetUserNotPaidOrders(userId int64) (orders []*table.Order, err error) {
 	orders = make([]*table.Order, 0)
 	err = DB().Where("user_id = ?", userId).
-		Not("state", 2).
+		Not("state", table.ORDER_STATE_PAY_SUCCESS).
 		Find(&orders).Error
 	// SELECT * FROM orders WHERE user_id = {userId} AND state != 2
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -90,7 +91,7 @@ func GetUserNotPaidOrders(userId int64) (orders []*table.Order, err error) {
 func GetUserNotFailedOrders(userId int64) (orders []*table.Order, err error) {
 	orders = make([]*table.Order, 0)
 	err = DB().Where("user_id = ?", userId).
-		Not("state", []int{1, 3}).
+		Not("state", []int{table.ORDER_STATE_UNPAID, table.ORDER_STATE_PAY_FAILD}).
 		Find(&orders).Error
 	// SELECT * FROM orders WHERE user_id = {userId} AND state NOT IN (1, 3)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -102,8 +103,8 @@ func GetUserNotFailedOrders(userId int64) (orders []*table.Order, err error) {
 // OR 条件
 func GetOrderUnPaidOrPayFailed() (orders []*table.Order, err error) {
 	orders = make([]*table.Order, 0)
-	err = DB().Where("state = ?", 1).
-		Or("state = ?", 3).
+	err = DB().Where("state = ?", table.ORDER_STATE_UNPAID).
+		Or("state = ?", table.ORDER_STATE_PAY_FAILD).
 		Find(&orders).Error
 	// SELECT * FROM orders WHERE user_id = {userId} AND state NOT IN (1, 3)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -247,3 +248,25 @@ func GetOrderStatMap() (statMap map[string]*OrderStat, err error) {
 }
 
 //-------- 单表查询结束 -----------//
+
+//-------- Update操作 -----------//
+
+// GORM 的时间跟踪
+// GORM 会对模型中的三个时间字段进行跟踪, 分别是CreatedAt, UpdatedAt, DeletedAt
+// 如果模型有CreatedAt, UpdatedAt 创建记录时都会被赋予当时的时间, 更新记录时GORM会总动更新UpdatedAt的时间
+// 如果模型有DeletedAt字段, 调用Delete删除该记录时，将会设置DeletedAt字段为当前时间，而不是直接将记录从数据库中删除。
+
+func SetOrderStatePaySuccess(orderNo string) error {
+	updates := map[string]interface{}{
+		"state":   table.ORDER_STATE_PAY_SUCCESS,
+		"paid_at": time.Now(),
+	}
+	// 执行SQL UPDATE orders SET state = 2, paid_at = '当前时间(yyyy-mm-dd hh:ii:ss)', updated_at = '当前时间' WHERE order_no = {orderNo}
+	// 使用 map 更新多个属性，只会更新其中有变化的属性
+	err := DB().Model(table.Order{}).
+		Where("order_no = ?", orderNo).
+		Update(updates).Error
+	// Update方法里也可以使用结构体 Update(&table.Order{State: 2, PaidAt: time.Now()})
+	// 使用 struct 更新多个属性，只会更新其中有变化且为非零值的字段
+	return err
+}

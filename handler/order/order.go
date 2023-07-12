@@ -52,3 +52,13 @@ func SingeTableQuery(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+
+func SetOrderState(w http.ResponseWriter, r *http.Request) {
+	err := dao.SetOrderStatePaySuccess("20230704000000001366262146")
+	if err != nil {
+		fmt.Fprintln(w, "更新失败!")
+		return
+	}
+	fmt.Fprintln(w, "更新成功!")
+	return
+}
