@@ -141,7 +141,8 @@ func QueryOrderListForUser(userId int64, dataFrom, dataSize int, startDate, endD
 }
 
 func QueryOrderCountForUser(userId int64, startDate, endDate string) (orderCount int, err error) {
-	db := DB().Where("user_id = ?", userId)
+	db := DB().Model(table.Order{}).
+		Where("user_id = ?", userId)
 	if startDate != "" {
 		db = db.Where("created_at >= ?", startDate)
 	}
@@ -162,7 +163,11 @@ type OrderSerialInfo struct {
 func GetOrderSerialInfo(orderNo string) (orderSerialInfo *OrderSerialInfo, err error) {
 
 	orderSerialInfo = new(OrderSerialInfo)
-	err = DB().Debug().Table(table.Order{}.TableName()).
+	// Debug() 用于调试时打印出执行的SQL
+	// Scan操作时使用.Model() 会告诉GORM要在哪个Model对象上执行操作, GORM会自动找到对应的表名
+	err = DB().Debug().Model(table.Order{}).
+		// DB().Model(table.Order{}) 也可以写成 DB().Table(table.Order{}.TableName())
+		//.Table()是更底层的写法，直接指定SQL的表名, 一般在关联查询里使用这种写法
 		Select("order_no, platform_order_no").
 		Where("order_no = ?", orderNo).
 		Scan(&orderSerialInfo).Error
@@ -177,9 +182,12 @@ func GetOrderSerialInfo(orderNo string) (orderSerialInfo *OrderSerialInfo, err e
 	return
 }
 
+//db.Model() 和 db.Table()的区别
+//https://stackoverflow.com/questions/67550966/go-gorm-difference-between-db-model-and-db-table-query
+
 func GetOrdersSerial(orderNo []string) (serialInfoList []*OrderSerialInfo, err error) {
 	serialInfoList = make([]*OrderSerialInfo, 0)
-	err = DB().Debug().Table(table.Order{}.TableName()).
+	err = DB().Debug().Model(table.Order{}).
 		Select("order_no, platform_order_no").
 		Where("order_no IN (?)", orderNo).
 		Scan(&serialInfoList).Error
@@ -197,7 +205,7 @@ type OrderStat struct {
 
 func GetOrderStat() (stats []*OrderStat, err error) {
 	stats = make([]*OrderStat, 0)
-	err = DB().Debug().Table(table.Order{}.TableName()).
+	err = DB().Debug().Model(table.Order{}).
 		Select("SUM(bill_money) AS amount, DATE(created_at) AS date").
 		Group("DATE(created_at)").
 		Having("amount > 0").Scan(&stats).Error // 把Group结果扫描进实现定义好的结构体列表
