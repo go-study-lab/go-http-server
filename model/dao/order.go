@@ -231,6 +231,7 @@ func GetOrderStatMap() (statMap map[string]*OrderStat, err error) {
 	var amount int64
 	var date string
 	statMap = map[string]*OrderStat{}
+	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&amount, &date)
 
@@ -268,5 +269,72 @@ func SetOrderStatePaySuccess(orderNo string) error {
 		Update(updates).Error
 	// Update方法里也可以使用结构体 Update(&table.Order{State: 2, PaidAt: time.Now()})
 	// 使用 struct 更新多个属性，只会更新其中有变化且为非零值的字段
+	// 另外可以通过Update(updates).RowsAffected 获取更新的记录数
 	return err
+}
+
+//-------- Update操作结束 -----------//
+
+//-------- Join 查询 -----------//
+
+type UserGoods struct {
+	UserId     int64
+	OrderNo    string
+	GoodsId    int64
+	GoodsName  string
+	OrderState int `gorm:"column:state"`
+}
+
+func GetUserOrderGoods(userId int64) (goodsList []*UserGoods, err error) {
+	tableOrder := table.Order{}.TableName()
+	tableGoods := table.OrderGoods{}.TableName()
+
+	goodsList = make([]*UserGoods, 0)
+
+	err = DB().Debug().Table(tableOrder+" AS o").
+		Joins("INNER JOIN "+tableGoods+" AS og ON o.id = og.order_id").
+		Select("o.user_id, o.order_no, o.state, og.id as goods_id, og.goods_name").
+		Where("o.user_id = ?", userId).Scan(&goodsList).Error
+	// Scan, Find方法的参数是Slice类型时, 必须传递Slice的指针, 否则在其中填充数据后因为底层数组变更,导致内外部Slice指向的底层数组不一致
+	zlog.Info("debug data", zap.Any("data", goodsList))
+
+	return
+}
+
+// GetUserOrderGoodsMap 返回以GoodsId为Key, GoodsName为值的Map
+// 主要是为了演示对JOIN查询结果集的逐行Scan操作
+func GetUserOrderGoodsMap(userId int64) (userOrderGoodsMap map[int64]string, err error) {
+	tableOrder := table.Order{}.TableName()
+	tableGoods := table.OrderGoods{}.TableName()
+
+	rows, err := DB().Table(tableOrder+" AS o").
+		Joins("INNER JOIN "+tableGoods+" AS og ON o.id = og.order_id").
+		Select("og.id as goods_id, og.goods_name").
+		Where("o.user_id = ?", userId).Rows()
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return nil, err
+	}
+
+	defer rows.Close()
+	userOrderGoodsMap = make(map[int64]string)
+	var (
+		GoodsId   int64
+		GoodsName string
+	)
+	for rows.Next() {
+		//err := rows.Scan(&result)
+		// 遍历结果集的记录时Scan只能往多个基础类型变量里扫描列对应的数据
+		// 有几列就对应几个变量, 不能往结构体里扫描, 否则会报错
+		// 比如本例中如果把连表查询的结果逐行Scan到一个结构体变量, 会有如下错误
+		// sql: expected 2 destination arguments in Scan, not 1
+		// 综合起来更推荐上一种把整个结果集Scan进结构体列表的方式拿到连表查询的结果集.
+		err := rows.Scan(&GoodsId, &GoodsName)
+		if err != nil {
+			return nil, err
+		}
+
+		userOrderGoodsMap[GoodsId] = GoodsName
+	}
+
+	return
 }

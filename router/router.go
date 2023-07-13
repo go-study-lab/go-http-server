@@ -48,4 +48,5 @@ func RegisterRoutes(r *mux.Router) {
 	orderRouter.HandleFunc("/order_goods/init", order.GoodsInit).Methods("POST")
 	orderRouter.HandleFunc("/single_table/query_demo", order.SingeTableQuery)
 	orderRouter.HandleFunc("/set_state", order.SetOrderState).Methods("POST")
+	orderRouter.HandleFunc("/multiple_table/query_demo", order.MultipleTableQuery).Methods("GET")
 }

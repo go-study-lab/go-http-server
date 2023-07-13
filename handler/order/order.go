@@ -62,3 +62,22 @@ func SetOrderState(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "更新成功!")
 	return
 }
+
+func MultipleTableQuery(w http.ResponseWriter, r *http.Request) {
+	goodsList, err := dao.GetUserOrderGoods(534321467)
+	if err != nil {
+		fmt.Fprintln(w, "JOIN 查询", "Error: ", err)
+		return
+	}
+	fmt.Fprintln(w, "JOIN 查询成功")
+	for _, item := range goodsList {
+		fmt.Fprintln(w, "--OrderNo:", item.OrderNo, "--GoodsName:", item.GoodsName, "---GoodsId:", item.GoodsId)
+	}
+
+	goodsMap, err := dao.GetUserOrderGoodsMap(534321467)
+	fmt.Fprintln(w, "JOIN 查询", "Error: ", err)
+	for key, item := range goodsMap {
+		fmt.Fprintln(w, "--GoodsId:", key, "--GoodsName:", item)
+	}
+	return
+}
