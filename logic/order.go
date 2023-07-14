@@ -5,6 +5,7 @@ import (
 	"example.com/http_demo/model/dao"
 	"example.com/http_demo/model/dao/table"
 	"example.com/http_demo/utils/zlog"
+	"github.com/jinzhu/gorm"
 	"go.uber.org/zap"
 )
 
@@ -40,5 +41,30 @@ func QueryUserOrdersInPage(userId int64, page int, startDate, endDate string) (o
 		zlog.Error("QueryUserOrdersError", zap.Error(err))
 		return nil, 0, err
 	}
+	return
+}
+
+func SetOrderSuccessAndCreateGoods(userId int64, orderNo string) (err error) {
+
+	// 开启事务并自动提交
+	err = dao.DB().Transaction(func(tx *gorm.DB) error {
+		// 在事务中执行一些 db 操作（从这里开始，您应该使用 'tx' 而不是 'db'）
+		order, err := dao.GetOrderByNoInTx(tx, orderNo)
+		if err != nil || order.UserId != userId {
+			zlog.Error("error_detail", zap.Error(err), zap.Any("userId", userId), zap.Any("orderNo", orderNo))
+			// 返回任何错误都会回滚事务
+			return errors.New("未找到对应的订单")
+		}
+
+		err = dao.SetOrderStatePaySuccessInTx(tx, orderNo)
+		if err != nil {
+			return err
+		}
+
+		err = dao.CreateOrderGoodsInTx(tx, userId, order.Id, "商品名InTx")
+
+		return err
+	})
+
 	return
 }

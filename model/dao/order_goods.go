@@ -59,3 +59,13 @@ func BulkInsertOrderGoods(unsavedRows []*table.OrderGoods) error {
 	err := DB().Exec(statement, valueArgs...).Error
 	return err
 }
+
+func CreateOrderGoodsInTx(tx *gorm.DB, userId, orderId int64, goodsName string) error {
+	orderGoods := &table.OrderGoods{
+		UserId:    userId,
+		GoodsName: goodsName,
+		OrderId:   orderId,
+	}
+	err := tx.Create(orderGoods).Error
+	return err
+}

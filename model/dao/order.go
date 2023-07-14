@@ -338,3 +338,25 @@ func GetUserOrderGoodsMap(userId int64) (userOrderGoodsMap map[int64]string, err
 
 	return
 }
+
+// 事务内操作
+
+func GetOrderByNoInTx(tx *gorm.DB, orderNo string) (order *table.Order, err error) {
+	order = new(table.Order)
+	err = tx.Set("gorm:query_option", "FOR UPDATE").Where("order_no = ?", orderNo).First(&order).Error
+	// SELECT * FROM orders WHERE order_no = ? FOR UPDATE
+	return
+}
+
+// SetOrderStatePaySuccessInTx 在事务中修改订单状态
+func SetOrderStatePaySuccessInTx(tx *gorm.DB, orderNo string) error {
+	updates := map[string]interface{}{
+		"state":   table.ORDER_STATE_PAY_SUCCESS,
+		"paid_at": time.Now(),
+	}
+	err := tx.Model(table.Order{}).
+		Where("order_no = ?", orderNo).
+		Update(updates).Error
+
+	return err
+}
