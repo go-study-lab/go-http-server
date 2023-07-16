@@ -68,3 +68,37 @@ func SetOrderSuccessAndCreateGoods(userId int64, orderNo string) (err error) {
 
 	return
 }
+
+func SetOrderSuccessAndCreateGoodsInHandTx(userId int64, orderNo string) (err error) {
+	// 手动开启事务
+	tx := dao.DB().Begin()
+	panicked := true
+	defer func() { // 控制事务的提交和回滚, 保证事务的完整性
+		// db.Transaction 内部其实就是这么实现的
+		if err != nil || panicked {
+			tx.Rollback()
+		} else {
+			tx.Commit()
+		}
+	}()
+
+	order, err := dao.GetOrderByNoInTx(tx, orderNo)
+	if err != nil || order.UserId != userId {
+		zlog.Error("error_detail", zap.Error(err), zap.Any("userId", userId), zap.Any("orderNo", orderNo))
+		// 返回任何错误都会回滚事务
+		return errors.New("未找到对应的订单")
+	}
+
+	err = dao.SetOrderStatePaySuccessInTx(tx, orderNo)
+	if err != nil {
+		return err
+	}
+
+	err = dao.CreateOrderGoodsInTx(tx, userId, order.Id, "商品名InTx")
+	if err != nil {
+		return err
+	}
+	// 没有错误把panicked设置为false,  代表着程序正常执行完毕, 事务提交
+	panicked = false
+	return err
+}
