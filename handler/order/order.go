@@ -81,3 +81,14 @@ func MultipleTableQuery(w http.ResponseWriter, r *http.Request) {
 	}
 	return
 }
+
+func SetOrderPaySuccess(w http.ResponseWriter, r *http.Request) {
+	err := logic.SetOrderSuccessAndCreateGoods(534321467, "20230704000000001366352146")
+	if err != nil {
+		fmt.Fprintln(w, "更新失败!")
+		return
+	}
+
+	fmt.Fprintln(w, "更新成功!")
+	return
+}

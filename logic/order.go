@@ -69,6 +69,8 @@ func SetOrderSuccessAndCreateGoods(userId int64, orderNo string) (err error) {
 	return
 }
 
+// SetOrderSuccessAndCreateGoodsInHandTx 与 SetOrderSuccessAndCreateGoods 功能相同, 区别是使用的手动管理事务的方式
+// SetOrderSuccessAndCreateGoods 使用的是db.Transaction 自动管理的事务
 func SetOrderSuccessAndCreateGoodsInHandTx(userId int64, orderNo string) (err error) {
 	// 手动开启事务
 	tx := dao.DB().Begin()
@@ -100,5 +102,5 @@ func SetOrderSuccessAndCreateGoodsInHandTx(userId int64, orderNo string) (err er
 	}
 	// 没有错误把panicked设置为false,  代表着程序正常执行完毕, 事务提交
 	panicked = false
-	return err
+	return
 }
